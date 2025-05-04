@@ -7,7 +7,7 @@ import { type NextRequest, NextResponse } from "next/server";
 // PATCH - Update a shopping list item
 export async function PATCH(
 	request: NextRequest,
-	{ params }: { params: { id: string; itemId: string } },
+	{ params }: { params: Promise<{ id: string; itemId: string }> },
 ) {
 	try {
 		const session = await getServerSession(authOptions);
@@ -15,8 +15,7 @@ export async function PATCH(
 			return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 		}
 
-		const shoppingListId = params.id;
-		const itemId = params.itemId;
+		const { id: shoppingListId, itemId } = await params;
 
 		if (!ObjectId.isValid(shoppingListId)) {
 			return NextResponse.json(
@@ -115,7 +114,7 @@ export async function PATCH(
 // DELETE - Remove a shopping list item
 export async function DELETE(
 	request: NextRequest,
-	{ params }: { params: { id: string; itemId: string } },
+	{ params }: { params: Promise<{ id: string; itemId: string }> },
 ) {
 	try {
 		const session = await getServerSession(authOptions);
@@ -123,8 +122,7 @@ export async function DELETE(
 			return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 		}
 
-		const shoppingListId = params.id;
-		const itemId = params.itemId;
+		const { id: shoppingListId, itemId } = await params;
 
 		if (!ObjectId.isValid(shoppingListId)) {
 			return NextResponse.json(

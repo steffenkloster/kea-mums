@@ -6,14 +6,11 @@ import { getServerSession } from "next-auth/next";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-interface RouteParams {
-	params: {
-		id: string;
-	};
-}
-
 // POST to add a recipe to favorites
-export async function POST(request: NextRequest, { params }: RouteParams) {
+export async function POST(
+	request: NextRequest,
+	{ params }: { params: Promise<{ id: string }> },
+) {
 	try {
 		const session = await getServerSession(authOptions);
 
@@ -21,7 +18,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 			return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 		}
 
-		const { id } = params;
+		const { id } = await params;
 		const userId = session.user.id;
 
 		const { db } = await connectToDatabase();
@@ -81,7 +78,10 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 }
 
 // DELETE to remove a recipe from favorites
-export async function DELETE(request: NextRequest, { params }: RouteParams) {
+export async function DELETE(
+	request: NextRequest,
+	{ params }: { params: Promise<{ id: string }> },
+) {
 	try {
 		const session = await getServerSession(authOptions);
 
@@ -89,7 +89,7 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
 			return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 		}
 
-		const { id } = params;
+		const { id } = await params;
 		const userId = session.user.id;
 
 		const { db } = await connectToDatabase();

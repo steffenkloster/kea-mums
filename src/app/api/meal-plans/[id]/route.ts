@@ -7,7 +7,7 @@ import { type NextRequest, NextResponse } from "next/server";
 // GET - Get a single meal plan by ID with its meal items
 export async function GET(
 	request: NextRequest,
-	{ params }: { params: { id: string } },
+	{ params }: { params: Promise<{ id: string }> },
 ) {
 	try {
 		const session = await getServerSession(authOptions);
@@ -15,7 +15,7 @@ export async function GET(
 			return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 		}
 
-		const mealPlanId = params.id;
+		const { id: mealPlanId } = await params;
 
 		if (!ObjectId.isValid(mealPlanId)) {
 			return NextResponse.json(
@@ -118,7 +118,7 @@ export async function GET(
 // PATCH - Update a meal plan
 export async function PATCH(
 	request: NextRequest,
-	{ params }: { params: { id: string } },
+	{ params }: { params: Promise<{ id: string }> },
 ) {
 	try {
 		const session = await getServerSession(authOptions);
@@ -126,7 +126,7 @@ export async function PATCH(
 			return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 		}
 
-		const mealPlanId = params.id;
+		const { id: mealPlanId } = await params;
 
 		if (!ObjectId.isValid(mealPlanId)) {
 			return NextResponse.json(
@@ -197,7 +197,7 @@ export async function PATCH(
 // DELETE - Delete a meal plan
 export async function DELETE(
 	request: NextRequest,
-	{ params }: { params: { id: string } },
+	{ params }: { params: Promise<{ id: string }> },
 ) {
 	try {
 		const session = await getServerSession(authOptions);
@@ -205,7 +205,7 @@ export async function DELETE(
 			return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 		}
 
-		const mealPlanId = params.id;
+		const { id: mealPlanId } = await params;
 
 		if (!ObjectId.isValid(mealPlanId)) {
 			return NextResponse.json(

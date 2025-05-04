@@ -14,14 +14,11 @@ import type {
 	UserModel,
 } from "@/types";
 
-interface RouteParams {
-	params: {
-		id: string;
-	};
-}
-
 // GET a single recipe by ID
-export async function GET(request: NextRequest, { params }: RouteParams) {
+export async function GET(
+	request: NextRequest,
+	{ params }: { params: Promise<{ id: string }> },
+) {
 	try {
 		const session = await getServerSession(authOptions);
 
@@ -29,7 +26,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
 			return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 		}
 
-		const { id } = params;
+		const { id } = await params;
 
 		const { db } = await connectToDatabase();
 

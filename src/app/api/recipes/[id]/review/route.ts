@@ -7,7 +7,7 @@ import { type NextRequest, NextResponse } from "next/server";
 // POST - Create or update a review
 export async function POST(
 	request: NextRequest,
-	{ params }: { params: { id: string } },
+	{ params }: { params: Promise<{ id: string }> },
 ) {
 	try {
 		const session = await getServerSession(authOptions);
@@ -15,7 +15,7 @@ export async function POST(
 			return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 		}
 
-		const recipeId = params.id;
+		const { id: recipeId } = await params;
 
 		if (!ObjectId.isValid(recipeId)) {
 			return NextResponse.json(
@@ -104,7 +104,7 @@ export async function POST(
 // GET - Get a user's review for a recipe
 export async function GET(
 	request: NextRequest,
-	{ params }: { params: { id: string } },
+	{ params }: { params: Promise<{ id: string }> },
 ) {
 	try {
 		const session = await getServerSession(authOptions);
@@ -112,7 +112,7 @@ export async function GET(
 			return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 		}
 
-		const recipeId = params.id;
+		const { id: recipeId } = await params;
 
 		if (!ObjectId.isValid(recipeId)) {
 			return NextResponse.json(

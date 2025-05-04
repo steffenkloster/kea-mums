@@ -11,12 +11,11 @@ import { type NextRequest, NextResponse } from "next/server";
 
 export async function DELETE(
 	request: NextRequest,
-	{ params }: { params: { id: string; mealId: string } },
+	{ params }: { params: Promise<{ id: string; mealId: string }> },
 ) {
 	try {
 		const userId = await getSessionUserId();
-		const mealPlanId = params.id;
-		const mealId = params.mealId;
+		const { id: mealPlanId, mealId } = await params;
 
 		validateObjectId(mealPlanId, "meal plan ID");
 		validateObjectId(mealId, "meal ID");
@@ -55,12 +54,11 @@ export async function DELETE(
 
 export async function PATCH(
 	request: NextRequest,
-	{ params }: { params: { id: string; mealId: string } },
+	{ params }: { params: Promise<{ id: string; mealId: string }> },
 ) {
 	try {
 		const userId = await getSessionUserId();
-		const mealPlanId = params.id;
-		const mealId = params.mealId;
+		const { id: mealPlanId, mealId } = await params;
 
 		validateObjectId(mealPlanId, "meal plan ID");
 		validateObjectId(mealId, "meal ID");

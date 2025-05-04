@@ -7,7 +7,7 @@ import { type NextRequest, NextResponse } from "next/server";
 // GET - Get a shopping list by ID
 export async function GET(
 	request: NextRequest,
-	{ params }: { params: { id: string } },
+	{ params }: { params: Promise<{ id: string }> },
 ) {
 	try {
 		const session = await getServerSession(authOptions);
@@ -15,7 +15,7 @@ export async function GET(
 			return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 		}
 
-		const shoppingListId = params.id;
+		const { id: shoppingListId } = await params;
 
 		if (!ObjectId.isValid(shoppingListId)) {
 			return NextResponse.json(
@@ -138,7 +138,7 @@ export async function GET(
 // DELETE - Delete a shopping list
 export async function DELETE(
 	request: NextRequest,
-	{ params }: { params: { id: string } },
+	{ params }: { params: Promise<{ id: string }> },
 ) {
 	try {
 		const session = await getServerSession(authOptions);
@@ -146,7 +146,7 @@ export async function DELETE(
 			return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 		}
 
-		const shoppingListId = params.id;
+		const { id: shoppingListId } = await params;
 
 		if (!ObjectId.isValid(shoppingListId)) {
 			return NextResponse.json(
@@ -207,7 +207,7 @@ export async function DELETE(
 // PATCH - Update a shopping list
 export async function PATCH(
 	request: NextRequest,
-	{ params }: { params: { id: string } },
+	{ params }: { params: Promise<{ id: string }> },
 ) {
 	try {
 		const session = await getServerSession(authOptions);
@@ -215,7 +215,7 @@ export async function PATCH(
 			return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 		}
 
-		const shoppingListId = params.id;
+		const { id: shoppingListId } = await params;
 
 		if (!ObjectId.isValid(shoppingListId)) {
 			return NextResponse.json(

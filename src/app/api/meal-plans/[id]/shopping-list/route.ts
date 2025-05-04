@@ -10,45 +10,45 @@ import {
 import { ObjectId } from "mongodb";
 import { type NextRequest, NextResponse } from "next/server";
 
-export async function DELETE(
-	request: NextRequest,
-	{ params }: { params: { id: string; mealId: string } },
-) {
-	try {
-		// Reuse DELETE from meal-plans/[id]/meals/[mealId]
-		// Just call that handler or duplicate logic here
-		// For now, reuse logic by importing the handler
-		const { DELETE: deleteMeal } = await import(
-			"@/app/api/meal-plans/[id]/meals/[mealId]/route"
-		);
-		return await deleteMeal(request, { params });
-	} catch (error) {
-		return handleError(error, "Failed to remove meal from plan");
-	}
-}
+// export async function DELETE(
+// 	request: NextRequest,
+// 	{ params }: { params: Promise<{ id: string }> },
+// ) {
+// 	try {
+// 		// Reuse DELETE from meal-plans/[id]/meals/[mealId]
+// 		// Just call that handler or duplicate logic here
+// 		// For now, reuse logic by importing the handler
+// 		const { DELETE: deleteMeal } = await import(
+// 			"@/app/api/meal-plans/[id]/meals/[mealId]/route"
+// 		);
+// 		return await deleteMeal(request, { params });
+// 	} catch (error) {
+// 		return handleError(error, "Failed to remove meal from plan");
+// 	}
+// }
 
-export async function PATCH(
-	request: NextRequest,
-	{ params }: { params: { id: string; mealId: string } },
-) {
-	try {
-		// Reuse PATCH from meal-plans/[id]/meals/[mealId]
-		const { PATCH: patchMeal } = await import(
-			"@/app/api/meal-plans/[id]/meals/[mealId]/route"
-		);
-		return await patchMeal(request, { params });
-	} catch (error) {
-		return handleError(error, "Failed to update meal");
-	}
-}
+// export async function PATCH(
+// 	request: NextRequest,
+// 	{ params }: { params: { id: string; mealId: string } },
+// ) {
+// 	try {
+// 		// Reuse PATCH from meal-plans/[id]/meals/[mealId]
+// 		const { PATCH: patchMeal } = await import(
+// 			"@/app/api/meal-plans/[id]/meals/[mealId]/route"
+// 		);
+// 		return await patchMeal(request, { params });
+// 	} catch (error) {
+// 		return handleError(error, "Failed to update meal");
+// 	}
+// }
 
 export async function POST(
 	request: NextRequest,
-	{ params }: { params: { id: string } },
+	{ params }: { params: Promise<{ id: string }> },
 ) {
 	try {
 		const userId = await getSessionUserId();
-		const mealPlanId = params.id;
+		const { id: mealPlanId } = await params;
 
 		validateObjectId(mealPlanId, "meal plan ID");
 

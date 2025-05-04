@@ -7,7 +7,7 @@ import { type NextRequest, NextResponse } from "next/server";
 // POST - Add a new item to a shopping list
 export async function POST(
 	request: NextRequest,
-	{ params }: { params: { id: string } },
+	{ params }: { params: Promise<{ id: string }> },
 ) {
 	try {
 		const session = await getServerSession(authOptions);
@@ -15,7 +15,7 @@ export async function POST(
 			return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 		}
 
-		const shoppingListId = params.id;
+		const { id: shoppingListId } = await params;
 
 		if (!ObjectId.isValid(shoppingListId)) {
 			return NextResponse.json(

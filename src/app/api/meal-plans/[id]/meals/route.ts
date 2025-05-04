@@ -12,11 +12,11 @@ import { type NextRequest, NextResponse } from "next/server";
 
 export async function POST(
 	request: NextRequest,
-	{ params }: { params: { id: string } },
+	{ params }: { params: Promise<{ id: string }> },
 ) {
 	try {
 		const userId = await getSessionUserId();
-		const mealPlanId = params.id;
+		const { id: mealPlanId } = await params;
 
 		validateObjectId(mealPlanId, "meal plan ID");
 
