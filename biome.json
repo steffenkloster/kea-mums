@@ -1,0 +1,21 @@
+{
+	"files": {
+		"ignore": ["node_modules", ".next/**", "dist/**", "build/**", ".codebuddy"]
+	},
+	"linter": {
+		"enabled": true,
+		"rules": {
+			"recommended": true,
+			"suspicious": {
+				"noExplicitAny": "off",
+				"noImplicitAnyLet": "off"
+			}
+		},
+		"ignore": [".next/**"]
+	},
+	"formatter": {
+		"enabled": true,
+		"useEditorconfig": true,
+		"ignore": [".next/**"]
+	}
+}

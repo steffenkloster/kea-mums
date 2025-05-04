@@ -1,7 +1,11 @@
-import type { NextConfig } from "next";
+const withSvgr = require("next-plugin-svgr");
 
-const nextConfig: NextConfig = {
-  /* config options here */
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+	eslint: {
+		// Allows builds to succeed even if ESLint reports errors
+		ignoreDuringBuilds: true,
+	},
 };
 
-export default nextConfig;
+module.exports = withSvgr(nextConfig);

@@ -1,26 +1,47 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+.form-input,
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+input[type="tel"] {
+	@apply mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 focus:z-10 sm:text-sm;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+.form-input-error {
+	@apply border-red-300;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+.form-checkbox {
+	@apply focus:ring-emerald-500 h-4 w-4 text-emerald-600 border-gray-300 rounded;
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+.form-checkbox-error {
+	@apply text-red-600 border-red-300;
+}
+
+.error-message {
+	@apply mt-2 text-sm text-red-600;
+}
+
+.form-label {
+	@apply block text-sm font-medium text-gray-700;
+}
+
+.submit-button {
+	@apply relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-emerald-600 hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 disabled:bg-emerald-300;
+}
+
+/* Loading spinner */
+.spinner {
+	@apply animate-spin -ml-1 mr-3 h-5 w-5 text-white;
+}
+
+select {
+	@apply border mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm rounded-md;
+}
+
+button:not(:disabled) {
+	@apply cursor-pointer;
 }

@@ -1,0 +1,297 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("MONGODB_URI")
+}
+
+// User and Authentication Models (Enhanced)
+model User {
+  id                 String              @id @default(auto()) @map("_id") @db.ObjectId
+  name               String?
+  email              String?             @unique
+  emailVerified      DateTime?
+  password           String?
+  image              String?
+  dietaryPreferences String[]
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+  accounts           Account[]
+  sessions           Session[]
+  
+  // Recipe Management Related
+  recipes            Recipe[]            // Recipes created by user
+  favorites          FavoriteRecipe[]    // Favorite recipes
+  collections        Collection[]        // Recipe collections
+  reviews            Review[]            // Recipe reviews
+  mealPlans          MealPlan[]          // Meal plans
+  shoppingLists      ShoppingList[]      // Shopping lists
+  pantryItems        PantryItem[]        // User's pantry inventory
+}
+
+model Account {
+  id                 String  @id @default(auto()) @map("_id") @db.ObjectId
+  userId             String  @db.ObjectId
+  type               String
+  provider           String
+  providerAccountId  String
+  refresh_token      String?
+  access_token       String?
+  expires_at         Int?
+  token_type         String?
+  scope              String?
+  id_token           String?
+  session_state      String?
+  oauth_token_secret String?
+  oauth_token        String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  sessionToken String   @unique
+  userId       String   @db.ObjectId
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  identifier String
+  token      String
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// Recipe Management Models
+
+model Recipe {
+  id                String           @id @default(auto()) @map("_id") @db.ObjectId
+  title             String
+  description       String?
+  instructions      String[]         // Array of instruction steps
+  prepTime          Int              // In minutes
+  cookTime          Int              // In minutes
+  totalTime         Int              // In minutes
+  servings          Int
+  difficulty        String?          // Easy, Medium, Hard
+  imageUrl          String?
+  videoUrl          String?
+  isPublic          Boolean          @default(true)
+  nutritionFacts    Json?            // Store nutrition info as JSON
+  sourceUrl         String?          // Original source if imported
+  notes             String?
+  
+  // Categorization
+  cuisineType       String?          // Italian, Mexican, etc.
+  mealType          String?          // Breakfast, Lunch, Dinner, etc.
+  dishType          String?          // Appetizer, Main, Dessert, etc.
+  dietaryCategories String[]         // Vegan, Gluten-Free, etc.
+  
+  // Relationships
+  userId            String           @db.ObjectId
+  user              User             @relation(fields: [userId], references: [id])
+  ingredients       RecipeIngredient[] // Ingredients with measurements
+  reviews           Review[]         // User reviews and ratings
+  favoritedBy       FavoriteRecipe[] // Users who favorited
+  collections       CollectionRecipe[] // Collections containing this recipe
+  mealPlanItems     MealPlanItem[]   // Meal plan instances
+  
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+}
+
+model Ingredient {
+  id               String            @id @default(auto()) @map("_id") @db.ObjectId
+  name             String            @unique
+  category         String?           // Produce, Dairy, Meat, etc.
+  imageUrl         String?
+  units            String[]          // Possible measurement units (oz, g, cup, etc.)
+  alternativeNames String[]          // For search purposes
+  nutritionPerUnit Json?             // Nutrition info per unit
+  
+  // Relationships
+  recipeIngredients RecipeIngredient[] // Used in recipes
+  pantryItems       PantryItem[]     // In users' pantries
+  shoppingListItems ShoppingListItem[] // In shopping lists
+  
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+}
+
+model RecipeIngredient {
+  id           String     @id @default(auto()) @map("_id") @db.ObjectId
+  recipeId     String     @db.ObjectId
+  ingredientId String     @db.ObjectId
+  quantity     Float
+  unit         String     // oz, g, cup, etc.
+  preparation  String?    // chopped, diced, etc.
+  isOptional   Boolean    @default(false)
+  
+  // Relationships
+  recipe       Recipe     @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  ingredient   Ingredient @relation(fields: [ingredientId], references: [id])
+  
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  @@unique([recipeId, ingredientId])
+}
+
+model Review {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  rating      Int      // 1-5 stars
+  comment     String?
+  userId      String   @db.ObjectId
+  recipeId    String   @db.ObjectId
+  
+  // Relationships
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  recipe      Recipe   @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([userId, recipeId])
+}
+
+model FavoriteRecipe {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId      String   @db.ObjectId
+  recipeId    String   @db.ObjectId
+  
+  // Relationships
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  recipe      Recipe   @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  
+  createdAt   DateTime @default(now())
+
+  @@unique([userId, recipeId])
+}
+
+model Collection {
+  id           String             @id @default(auto()) @map("_id") @db.ObjectId
+  name         String
+  description  String?
+  imageUrl     String?
+  isPublic     Boolean            @default(false)
+  userId       String             @db.ObjectId
+  
+  // Relationships
+  user         User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  recipes      CollectionRecipe[] // Recipes in this collection
+  
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime           @updatedAt
+}
+
+model CollectionRecipe {
+  id           String     @id @default(auto()) @map("_id") @db.ObjectId
+  collectionId String     @db.ObjectId
+  recipeId     String     @db.ObjectId
+  
+  // Relationships
+  collection   Collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+  recipe       Recipe     @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  
+  createdAt    DateTime   @default(now())
+
+  @@unique([collectionId, recipeId])
+}
+
+// Meal Planning Models
+
+model MealPlan {
+  id          String        @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  startDate   DateTime
+  endDate     DateTime
+  userId      String        @db.ObjectId
+  
+  // Relationships
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  mealItems   MealPlanItem[] // Scheduled recipes
+  shoppingList ShoppingList? // Associated shopping list
+  
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+}
+
+model MealPlanItem {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  date        DateTime // Day and time
+  mealType    String   // Breakfast, Lunch, Dinner, Snack
+  servings    Int
+  notes       String?
+  mealPlanId  String   @db.ObjectId
+  recipeId    String   @db.ObjectId
+  
+  // Relationships
+  mealPlan    MealPlan @relation(fields: [mealPlanId], references: [id], onDelete: Cascade)
+  recipe      Recipe   @relation(fields: [recipeId], references: [id])
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// Shopping List Models
+
+model ShoppingList {
+  id          String            @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  userId      String            @db.ObjectId
+  mealPlanId  String?           @db.ObjectId @unique
+  
+  // Relationships
+  user        User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  mealPlan    MealPlan?         @relation(fields: [mealPlanId], references: [id])
+  items       ShoppingListItem[] // Items to purchase
+  
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+}
+
+model ShoppingListItem {
+  id              String       @id @default(auto()) @map("_id") @db.ObjectId
+  quantity        Float
+  unit            String
+  isChecked       Boolean      @default(false)
+  notes           String?
+  shoppingListId  String       @db.ObjectId
+  ingredientId    String       @db.ObjectId
+  
+  // Relationships
+  shoppingList    ShoppingList @relation(fields: [shoppingListId], references: [id], onDelete: Cascade)
+  ingredient      Ingredient   @relation(fields: [ingredientId], references: [id])
+  
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+}
+
+// Pantry/Inventory Management Models
+
+model PantryItem {
+  id            String     @id @default(auto()) @map("_id") @db.ObjectId
+  quantity      Float
+  unit          String
+  purchaseDate  DateTime?
+  expirationDate DateTime?
+  location      String?    // Fridge, Freezer, Pantry, etc.
+  userId        String     @db.ObjectId
+  ingredientId  String     @db.ObjectId
+  
+  // Relationships
+  user          User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  ingredient    Ingredient @relation(fields: [ingredientId], references: [id])
+  
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+
+  @@unique([userId, ingredientId])
+}
