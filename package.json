@@ -10,7 +10,7 @@
 		"format": "biome format",
 		"check": "biome lint --error-on-warnings .",
 		"prisma": "npx prisma generate && npx prisma db push",
-		"postinstall": "prisma generate"
+		"postinstall": "npx prisma generate"
 	},
 	"prisma": {
 		"schema": "./prisma/schema.prisma"
