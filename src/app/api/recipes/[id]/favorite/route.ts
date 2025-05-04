@@ -1,4 +1,4 @@
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/lib/auth";
 import { connectToDatabase } from "@/lib/mongodb";
 import type { FavoriteRecipeModel, Recipe } from "@/types";
 import { ObjectId } from "mongodb";

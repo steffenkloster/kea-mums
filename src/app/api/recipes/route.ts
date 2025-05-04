@@ -1,5 +1,5 @@
 import { getDb } from "@/app/api/_helpers";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/lib/auth";
 import type { FavoriteRecipeModel, Recipe } from "@/types";
 import { getServerSession } from "next-auth/next";
 import { NextResponse } from "next/server";
