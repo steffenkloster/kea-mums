@@ -77,7 +77,7 @@ export const authOptions: NextAuthOptions = {
 	},
 	pages: {
 		signIn: "/login",
-		newUser: "/register/welcome",
+		newUser: "/dashboard", // TODO: Create a welcome page
 		error: "/login",
 	},
 	secret: process.env.NEXTAUTH_SECRET,

@@ -87,18 +87,21 @@ export default function RegisterPage() {
 					});
 					// Still redirect to welcome page
 					setTimeout(() => {
-						router.push("/register/welcome");
+						//router.push("/register/welcome"); // TODO: Create a welcome page
+						router.push("/dashboard");
 					}, 2000);
 				} else {
 					// Redirect to welcome page
-					router.push("/register/welcome");
+					//router.push("/register/welcome"); // TODO: Create a welcome page
+					router.push("/dashboard");
 				}
 			} catch (error) {
 				setErrors({
 					form: "Registration successful but automatic login failed. Please try logging in.",
 				});
 				setTimeout(() => {
-					router.push("/register/welcome");
+					//router.push("/register/welcome"); // TODO: Create a welcome page
+					router.push("/dashboard");
 				}, 2000);
 			}
 		},
